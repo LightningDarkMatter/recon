@@ -1,7 +1,5 @@
 #!/bin/bash
 PATN_TO_DIRSEARCH="-Where file is saved-"
-TODAY=$(date)
-echo "This scan was created on $TODAY"
 DOMAIN=$1
 DIRECTORY=${DOMAIN}_recon
 echo "Creating directory $DIRECTORY."
@@ -37,3 +35,12 @@ case $2 in
         crt_scan
         ;;
 esac
+echo "Generating recon report output files..."
+TODAY=$(date)
+echo "This scan was created on $TODAY" > $DIRECTORY/report
+echo "Results for Nmap:" >> $DIRECTORY/report
+grep -E "^\s*\S+\s+\S+\s+\S+\s*$" $DIRECTORY/nmap >> $DIRECTORY/report
+echo "Results for Dirsearch:" >> $DIRECTORY/report
+cat $DIRECTORY/dirsearch >> $DIRECTORY/report
+echo "Resutls for cert.sh:" >> $DIRECTORY/report
+jq -r ".[] | .name_value" $DIRECTORY/crt >> $DIRECTORY/report 
