@@ -43,4 +43,4 @@ grep -E "^\s*\S+\s+\S+\s+\S+\s*$" $DIRECTORY/nmap >> $DIRECTORY/report
 echo "Results for Dirsearch:" >> $DIRECTORY/report
 cat $DIRECTORY/dirsearch >> $DIRECTORY/report
 echo "Resutls for cert.sh:" >> $DIRECTORY/report
-jq -r ".[] | .name_value" $DIRECTORY/crt >> $DIRECTORY/report 
+jq -r ".[] | .name_value" $DIRECTORY/crt >> $DIRECTORY/report
