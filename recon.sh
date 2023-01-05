@@ -1,10 +1,18 @@
 #!/bin/bash
 source ./scan.lib
 PATN_TO_DIRSEARCH="-Where file is saved-"
-getopts "m:" OPTION
-MODE=$OPTARGS
-for i in "${@:$OPTIND:$#}"
-do
+while getopts "m:i" OPTION; do
+    case $OPTION in
+        m)
+            MODE=$OPTARGS
+            ;;
+        i)
+            INTERACTIVE=true
+        ;;
+    esac
+done
+
+scan_domain(){
     DOMAIN=$1
     DIRECTORY=${DOMAIN}_recon
     echo "Creating directory $DIRECTORY."
@@ -25,6 +33,10 @@ do
             crt_scan
             ;;
     esac
+}
+report_domain(){
+    DOMAIN=$1
+    DIRECTORY=${DOMAIN}_recon
     echo "Generating recon report $DOMAIN..."
     TODAY=$(date)
     echo "This scan was created on $TODAY" > $DIRECTORY/report
@@ -40,4 +52,20 @@ do
         echo "Resutls for cert.sh:" >> $DIRECTORY/report
         jq -r ".[] | .name_value" $DIRECTORY/crt >> $DIRECTORY/report
     fi
-done
+}
+if [ $INTERACTIVE ];then
+    INPUT="BLANK"
+    while [ $INPUT != "quit"];do 
+        echo "Please enter a domain!"
+        read INPUT
+        if [ INPUT !="quit"];then
+            scan_domain $INPUT
+            report_domain $INPUT
+        fi
+    done
+else
+    for i in "${@:OPTIND:$#}";do
+        scan_domain $i
+        report_domain $i
+    done
+fi
